@@ -1,0 +1,1 @@
+g++ ServidorHTTP.cpp -o server -lws2_32
