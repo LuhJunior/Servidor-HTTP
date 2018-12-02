@@ -1,6 +1,6 @@
 #include <iostream>
 #include "ServerHTTP.hpp"
-
+clock_t inicio, fim;
 using namespace std;
 
 string Tools::convExt(string ext){
@@ -106,7 +106,7 @@ bool Response::Send(string fname, int remote_socket){
         this->setDate(data); 
     }
     else{
-        f.open("NotFound.html", fstream::in);
+        f.open("NotFound.html", fstream::in | fstream::binary);
         if(f.is_open()){
             f.seekg(0, fstream::end);
             int tam = f.tellg();
@@ -143,6 +143,7 @@ bool Response::Send(string fname, int remote_socket){
 }
 
 bool http::creatServer(){
+    inicio = clock();
     // inicia o Winsock 2.0 (DLL), Only for Windows
     if (WSAStartup(MAKEWORD(2, 0), &this->wsa_data) != 0) return Tools::Error("WSAStartup() failed", false);
     // criando o socket local para o servidor
@@ -153,7 +154,7 @@ bool http::creatServer(){
     this->local_address.sin_port = htons(this->local_port);// porta local
     this->local_address.sin_addr.s_addr = htonl(INADDR_ANY);  // endereco // inet_addr("127.0.0.1")
 
-     // interligando o socket com o endereço (local)
+    // interligando o socket com o endereço (local)
     if (bind(local_socket, (struct sockaddr *) &local_address, sizeof(local_address)) == SOCKET_ERROR)
         return Tools::ErrorS("bind() failed", false, this->local_socket);
 
@@ -172,9 +173,10 @@ bool http::Listen(int port){
     remote_length = sizeof(remote_address);
     //while(true){
         cout<<"Aguardando Conexao..."<<endl;
-
+        fim = clock();
         this->remote_socket = accept(local_socket, (struct sockaddr *) &remote_address, &remote_length);
         if(this->remote_socket == INVALID_SOCKET) return Tools::ErrorS("accept() failed", false, this->local_socket);
+        fim = clock();
         cout<<"Conexao estabelecida com "<< inet_ntoa(remote_address.sin_addr)<<endl;
         cout<<"Aguardando requisicoes..."<<endl;
         if(!req.receiveRequest(this->remote_socket)) return Tools::ErrorS("Falha ao receber a requisicao", false, this->local_socket);

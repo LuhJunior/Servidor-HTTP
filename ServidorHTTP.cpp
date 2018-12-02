@@ -4,6 +4,6 @@
 int main(){
     http HTTP;
     HTTP.Listen(PORT);
-    //HTTP.end();
+    HTTP.end();
     return 0;
 }

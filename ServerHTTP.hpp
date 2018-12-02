@@ -77,6 +77,9 @@ public:
     Request(){
         this->header = "";
     }
+    string getHeader(){
+        return this->header;
+    }
     string getMethod();
     string getRequestFileName();
     bool receiveRequest(int);
